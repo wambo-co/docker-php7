@@ -83,6 +83,6 @@ RUN cd /tmp/ && git clone https://github.com/xdebug/xdebug.git \
     && rm -r /tmp/xdebug \
     && apt-get purge -y --auto-remove
 
-COPY config/phpbackend/php.ini          /usr/local/etc/php/php.ini
-COPY config/phpbackend/php-fpm.conf     /usr/local/etc/php-fpm.conf
-COPY config/phpbackend/ext-xdebug.ini   /usr/local/etc/php/conf.d/ext-xdebug.ini
+COPY php.ini          /usr/local/etc/php/php.ini
+COPY php-fpm.conf     /usr/local/etc/php-fpm.conf
+COPY ext-xdebug.ini   /usr/local/etc/php/conf.d/ext-xdebug.ini
