@@ -1,4 +1,4 @@
-FROM php:7.1-fpm
+FROM php:7.2.0RC1-fpm
 
 ENV PHP_EXTRA_CONFIGURE_ARGS \
   --enable-fpm \
