@@ -82,4 +82,3 @@ RUN cd /tmp/ && git clone https://github.com/xdebug/xdebug.git \
 
 COPY php.ini          /usr/local/etc/php/php.ini
 COPY php-fpm.conf     /usr/local/etc/php-fpm.conf
-COPY ext-xdebug.ini   /usr/local/etc/php/conf.d/ext-xdebug.ini
