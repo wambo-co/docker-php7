@@ -48,10 +48,10 @@ RUN apt-get update && \
 RUN docker-php-ext-configure \
       gd --with-freetype-dir=/usr --with-jpeg-dir=/usr --with-png-dir=/usr
 
-RUN /usr/local/bin/docker-php-ext-install \
+
+RUN docker-php-ext-install \
       dom \
       pcntl \
-      phar \
       posix \
       pdo \
       sockets \
