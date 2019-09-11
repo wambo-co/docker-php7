@@ -1,4 +1,4 @@
-FROM php:7.1-fpm
+FROM php:7.1-fpm-stretch
 
 ENV PHP_EXTRA_CONFIGURE_ARGS \
   --enable-fpm \
@@ -18,7 +18,7 @@ RUN apt-get update && \
     autoconf \
     libbz2-dev \
     libltdl-dev \
-    libpng12-dev \
+    libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
     libxpm-dev \
@@ -28,7 +28,6 @@ RUN apt-get update && \
     libxslt1-dev \
     re2c \
     libpng++-dev \
-    libpng3 \
     libvpx-dev \
     zlib1g-dev \
     libgd-dev \
@@ -42,8 +41,7 @@ RUN apt-get update && \
     curl \
     wget \
     librabbitmq-dev \
-    libzip-dev \
-    libzip2
+    libzip-dev
 
 RUN docker-php-ext-configure \
       gd --with-freetype-dir=/usr --with-jpeg-dir=/usr --with-png-dir=/usr
@@ -70,15 +68,6 @@ RUN docker-php-ext-install \
       zip \
       calendar \
       gd
-
-
-# Install xdebug
-RUN cd /tmp/ && git clone https://github.com/xdebug/xdebug.git \
-    && cd xdebug && phpize && ./configure --enable-xdebug && make \
-    && mkdir /usr/lib/php7/ && cp modules/xdebug.so /usr/lib/php7/xdebug.so \
-    && touch /usr/local/etc/php/ext-xdebug.ini \
-    && rm -r /tmp/xdebug \
-    && apt-get purge -y --auto-remove
 
 COPY php.ini          /usr/local/etc/php/php.ini
 COPY php-fpm.conf     /usr/local/etc/php-fpm.conf
