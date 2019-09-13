@@ -1,4 +1,4 @@
-FROM php:7.2-fpm-stretch
+FROM php:7.3-fpm-buster
 
 ENV PHP_EXTRA_CONFIGURE_ARGS \
   --enable-fpm \
@@ -41,13 +41,13 @@ RUN apt-get update && \
     curl \
     wget \
     librabbitmq-dev \
-    libzip-dev 
+    libzip-dev
 
 
 RUN docker-php-ext-configure \
       gd --with-freetype-dir=/usr --with-jpeg-dir=/usr --with-png-dir=/usr
 
-RUN pecl install mcrypt-1.0.1
+RUN pecl install mcrypt-1.0.2
 RUN docker-php-ext-enable mcrypt
 
 RUN /usr/local/bin/docker-php-ext-install \
