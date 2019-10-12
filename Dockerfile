@@ -47,7 +47,8 @@ RUN docker-php-ext-configure gd \
 COPY php.ini          /usr/local/etc/php/php.ini
 COPY php-fpm.conf     /usr/local/etc/php-fpm.conf
 
-
 RUN curl -O https://files.magerun.net/n98-magerun.phar && \
     chmod +x n98-magerun.phar && \
     mv n98-magerun.phar /usr/local/bin/magerun
+
+RUN pecl install xdebug
