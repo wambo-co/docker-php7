@@ -88,9 +88,5 @@ RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
     && mv /tmp/blackfire-*.so $(php -r "echo ini_get('extension_dir');")/blackfire.so \
     && printf "extension=blackfire.so\nblackfire.agent_socket=tcp://blackfire:8707\n" > $PHP_INI_DIR/conf.d/blackfire.ini
 
-# trust the self-signed certificate for dev.planeo.de
-ADD ssl/dev.planeo.de/fullchain.pem /usr/local/share/ca-certificates/dev.planeo.de.crt
-RUN update-ca-certificates --fresh
-
 RUN usermod -u 1000 www-data \
     && usermod -G www-data www-data
