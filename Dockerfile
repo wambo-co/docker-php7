@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-buster
+FROM php:7.4-fpm
 
 ENV PHP_EXTRA_CONFIGURE_ARGS \
   --enable-fpm \
@@ -24,7 +24,6 @@ RUN apt-get update && \
     libxpm-dev \
     libimlib2-dev \
     libicu-dev \
-    libmcrypt-dev \
     libxslt1-dev \
     re2c \
     libpng++-dev \
@@ -41,26 +40,21 @@ RUN apt-get update && \
     curl \
     wget \
     librabbitmq-dev \
-    libzip-dev
-
+    libzip-dev \
+    libonig-dev
 
 RUN docker-php-ext-configure \
-      gd --with-freetype-dir=/usr --with-jpeg-dir=/usr --with-png-dir=/usr
+      gd --with-freetype --with-jpeg
 
-RUN pecl install mcrypt-1.0.2
-RUN docker-php-ext-enable mcrypt
-
-RUN /usr/local/bin/docker-php-ext-install \
+RUN docker-php-ext-install \
       dom \
       pcntl \
-      phar \
       posix \
       pdo \
       sockets \
       pdo_mysql \
       mysqli \
       mbstring \
-      hash \
       simplexml \
       xsl \
       soap \
@@ -72,15 +66,31 @@ RUN /usr/local/bin/docker-php-ext-install \
       calendar \
       gd
 
+RUN curl -o /usr/local/bin/composer https://getcomposer.org/composer.phar && \
+    chmod +x /usr/local/bin/composer
 
-# Install xdebug
-RUN cd /tmp/ && git clone https://github.com/xdebug/xdebug.git \
-    && cd xdebug && phpize && ./configure --enable-xdebug && make \
-    && mkdir /usr/lib/php7/ && cp modules/xdebug.so /usr/lib/php7/xdebug.so \
-    && touch /usr/local/etc/php/ext-xdebug.ini \
-    && rm -r /tmp/xdebug \
-    && apt-get purge -y --auto-remove
+# install xdebug
+RUN pecl install --nocompress xdebug-2.9.2
 
-COPY php.ini          /usr/local/etc/php/php.ini
-COPY php-fpm.conf     /usr/local/etc/php-fpm.conf
-#COPY ext-xdebug.ini   /usr/local/etc/php/conf.d/ext-xdebug.ini
+# install redis
+RUN pecl install --nocompress redis && docker-php-ext-enable redis
+
+# install magerun
+RUN apt update && apt install default-mysql-client -y
+RUN wget https://files.magerun.net/n98-magerun.phar && \
+    chmod +x ./n98-magerun.phar && \
+    mv ./n98-magerun.phar /usr/local/bin/magerun
+
+# install blackfire
+RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
+    && curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/amd64/$version \
+    && tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp \
+    && mv /tmp/blackfire-*.so $(php -r "echo ini_get('extension_dir');")/blackfire.so \
+    && printf "extension=blackfire.so\nblackfire.agent_socket=tcp://blackfire:8707\n" > $PHP_INI_DIR/conf.d/blackfire.ini
+
+# trust the self-signed certificate for dev.planeo.de
+ADD ssl/dev.planeo.de/fullchain.pem /usr/local/share/ca-certificates/dev.planeo.de.crt
+RUN update-ca-certificates --fresh
+
+RUN usermod -u 1000 www-data \
+    && usermod -G www-data www-data
