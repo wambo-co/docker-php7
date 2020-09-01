@@ -73,13 +73,8 @@ RUN /usr/local/bin/docker-php-ext-install \
       gd
 
 
-# Install xdebug
-RUN cd /tmp/ && git clone https://github.com/xdebug/xdebug.git \
-    && cd xdebug && phpize && ./configure --enable-xdebug && make \
-    && mkdir /usr/lib/php7/ && cp modules/xdebug.so /usr/lib/php7/xdebug.so \
-    && touch /usr/local/etc/php/ext-xdebug.ini \
-    && rm -r /tmp/xdebug \
-    && apt-get purge -y --auto-remove
+RUN pecl install --nocompress xdebug-2.9.2
+
 
 COPY php.ini          /usr/local/etc/php/php.ini
 COPY php-fpm.conf     /usr/local/etc/php-fpm.conf
